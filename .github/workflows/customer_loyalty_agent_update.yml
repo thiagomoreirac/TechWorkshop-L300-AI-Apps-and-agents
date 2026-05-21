@@ -18,10 +18,54 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Normalize Azure credentials
+        id: azure-creds
+        shell: bash
+        env:
+          RAW_AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+          SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          
+          creds = json.loads(os.environ["RAW_AZURE_CREDENTIALS"])
+          missing_value = object()
+          
+          def get_value(primary_key, fallback_key, *, required=True):
+              if primary_key in creds:
+                  return creds[primary_key]
+              if fallback_key in creds:
+                  return creds[fallback_key]
+              return missing_value if required else None
+ 
+          subscription_id = get_value("subscriptionId", "subscription", required=False)
+          if not subscription_id:
+              subscription_id = os.environ.get("SUBSCRIPTION_ID") or missing_value
+ 
+          normalized = {
+              "clientId": get_value("clientId", "appId"),
+              "clientSecret": get_value("clientSecret", "password"),
+              "tenantId": get_value("tenantId", "tenant"),
+              "subscriptionId": subscription_id,
+          }
+ 
+          missing = [key for key, value in normalized.items() if value is missing_value or not value]
+          if missing:
+              print(f"Missing required Azure credential fields after normalization: {', '.join(missing)}", file=sys.stderr)
+              sys.exit(1)
+ 
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write("creds<<AZURE_CREDS_EOF\n")
+              output.write(json.dumps(normalized))
+              output.write("\nAZURE_CREDS_EOF\n")
+          PY
+
       - name: Login via Azure CLI
         uses: azure/login@v2.1.1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: ${{ steps.azure-creds.outputs.creds }}
 
       - name: Deploy customer-loyalty agent to Foundry
         env:
