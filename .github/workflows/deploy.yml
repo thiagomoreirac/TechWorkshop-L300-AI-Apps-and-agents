@@ -51,10 +51,8 @@ jobs:
               "clientId": get_value("clientId", "appId"),
               "clientSecret": get_value("clientSecret", "password"),
               "tenantId": get_value("tenantId", "tenant"),
+              "subscriptionId": get_value("subscriptionId", "subscription"),
           }
-          subscription_id = get_value("subscriptionId", "subscription", required=False)
-          if subscription_id is not None:
-              normalized["subscriptionId"] = subscription_id
 
           missing = [key for key, value in normalized.items() if value is missing_value or not value]
           if missing:
