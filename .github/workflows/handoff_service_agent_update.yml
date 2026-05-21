@@ -8,6 +8,9 @@ on:
       - ".github/workflows/handoff_service_agent_update.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   deploy-agent:
     runs-on: ubuntu-latest

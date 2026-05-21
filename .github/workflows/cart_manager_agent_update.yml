@@ -8,6 +8,9 @@ on:
       - ".github/workflows/cart_manager_agent_update.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   deploy-agent:
     runs-on: ubuntu-latest
@@ -37,4 +40,3 @@ jobs:
             --headers "Content-Type=application/json" \
             --resource "https://ai.azure.com" \
             --body @/tmp/agent-payload.json
-
