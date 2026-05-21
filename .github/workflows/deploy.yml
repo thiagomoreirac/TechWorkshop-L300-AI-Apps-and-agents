@@ -22,7 +22,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          IMAGE=${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.ACR_IMAGE_NAME }}:${{ github.sha }}
+          IMAGE=${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.AZURE_CONTAINER_APP_NAME }}:${{ github.sha }}
           docker build -t $IMAGE ./src
           docker push $IMAGE
 
@@ -36,7 +36,7 @@ jobs:
         with:
           resourceGroup: ${{ secrets.AZURE_RESOURCE_GROUP }}
           containerAppName: ${{ secrets.AZURE_CONTAINER_APP_NAME }}
-          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.ACR_IMAGE_NAME }}:${{ github.sha }}
+          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.AZURE_CONTAINER_APP_NAME }}:${{ github.sha }}
           environmentVariables: >
             FOUNDRY_ENDPOINT=${{ secrets.FOUNDRY_ENDPOINT }}
             gpt_endpoint=${{ secrets.gpt_endpoint }}
