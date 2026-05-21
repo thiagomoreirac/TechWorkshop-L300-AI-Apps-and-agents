@@ -31,6 +31,7 @@ jobs:
         shell: bash
         env:
           RAW_AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+          SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
         run: |
           python - <<'PY'
           import json
@@ -47,11 +48,15 @@ jobs:
                   return creds[fallback_key]
               return missing_value if required else None
 
+          subscription_id = get_value("subscriptionId", "subscription", required=False)
+          if not subscription_id:
+              subscription_id = os.environ.get("SUBSCRIPTION_ID") or missing_value
+
           normalized = {
               "clientId": get_value("clientId", "appId"),
               "clientSecret": get_value("clientSecret", "password"),
               "tenantId": get_value("tenantId", "tenant"),
-              "subscriptionId": get_value("subscriptionId", "subscription"),
+              "subscriptionId": subscription_id,
           }
 
           missing = [key for key, value in normalized.items() if value is missing_value or not value]
