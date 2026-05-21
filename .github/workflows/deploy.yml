@@ -36,15 +36,20 @@ jobs:
           import json
           import os
           import sys
-
+          
           creds = json.loads(os.environ["RAW_AZURE_CREDENTIALS"])
+          
+          def get_value(primary_key, fallback_key):
+              return creds[primary_key] if primary_key in creds else creds.get(fallback_key)
+
           normalized = {
-              **creds,
-              "clientId": creds.get("clientId") or creds.get("appId"),
-              "clientSecret": creds.get("clientSecret") or creds.get("password"),
-              "tenantId": creds.get("tenantId") or creds.get("tenant"),
-              "subscriptionId": creds.get("subscriptionId") or creds.get("subscription"),
+              "clientId": get_value("clientId", "appId"),
+              "clientSecret": get_value("clientSecret", "password"),
+              "tenantId": get_value("tenantId", "tenant"),
           }
+          subscription_id = get_value("subscriptionId", "subscription")
+          if subscription_id is not None:
+              normalized["subscriptionId"] = subscription_id
 
           missing = [key for key in ("clientId", "clientSecret", "tenantId") if not normalized.get(key)]
           if missing:
