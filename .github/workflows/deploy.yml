@@ -83,6 +83,11 @@ jobs:
           imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.AZURE_CONTAINER_APP_NAME }}:${{ github.sha }}
           environmentVariables: >
             FOUNDRY_ENDPOINT=${{ secrets.FOUNDRY_ENDPOINT }}
+            FOUNDRY_API_VERSION=${{ secrets.FOUNDRY_API_VERSION }}
             gpt_endpoint=${{ secrets.gpt_endpoint }}
+            gpt_deployment=${{ secrets.gpt_deployment }}
+            gpt_api_version=${{ secrets.gpt_api_version }}
             embedding_endpoint=${{ secrets.embedding_endpoint }}
             phi_4_endpoint=${{ secrets.phi_4_endpoint }}
+            phi_4_deployment=${{ secrets.phi_4_deployment }}
+            phi_4_api_version=${{ secrets.phi_4_api_version }}
