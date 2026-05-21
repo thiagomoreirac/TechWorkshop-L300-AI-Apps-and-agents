@@ -53,10 +53,10 @@ jobs:
               "tenantId": get_value("tenantId", "tenant"),
           }
           subscription_id = get_value("subscriptionId", "subscription", required=False)
-          if subscription_id is not None:
+          if subscription_id is not None and subscription_id is not missing_value:
               normalized["subscriptionId"] = subscription_id
 
-          missing = [key for key, value in normalized.items() if value is missing_value or not value]
+          missing = [key for key, value in normalized.items() if value is missing_value or value == ""]
           if missing:
               print(f"Missing required Azure credential fields after normalization: {', '.join(missing)}", file=sys.stderr)
               sys.exit(1)
